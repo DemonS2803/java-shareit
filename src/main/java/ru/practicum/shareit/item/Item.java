@@ -1,20 +1,19 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.item;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * TODO Sprint add-controllers.
  */
 @Getter
 @Setter
-@ToString
-public class User {
+public class Item {
 
     private Long id;
-    private String email;
     private String name;
-    private String surname;
+    private String description;
+    private Long ownerId;
+    private boolean available;
 
 }

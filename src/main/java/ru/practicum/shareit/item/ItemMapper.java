@@ -19,8 +19,6 @@ class ItemMapper {
         Item item = new Item();
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
-//        item.setOwnerId(dto.getAvailable());
-//        item.setStatus(ItemStatus.AVAILABLE);
         item.setAvailable(dto.getAvailable());
         return item;
     }
@@ -30,7 +28,6 @@ class ItemMapper {
         item.setId(dto.getId());
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
-//        item.setStatus(dto.getStatus());
         item.setAvailable(dto.getAvailable());
         return item;
     }

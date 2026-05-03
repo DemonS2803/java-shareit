@@ -31,9 +31,6 @@ class ItemInMemoryRepository implements ItemRepository {
         if (item == null) {
             throw new RepositoryException("Item is null");
         }
-        if (!items.containsKey(item.getId())) {
-            throw new RepositoryException("Item with id " + item.getId() + " not found");
-        }
         items.put(item.getId(), item);
         return item;
     }
@@ -57,12 +54,12 @@ class ItemInMemoryRepository implements ItemRepository {
 
     @Override
     public List<Item> searchAvailableItems(String text) {
+        String searchTarget = text.toLowerCase();
         return items.values().stream()
                 .filter(Item::isAvailable)
-                .filter(item -> {
-                    String fulltext = item.getName() + item.getDescription();
-                    return fulltext.toLowerCase().contains(text.toLowerCase());
-                })
+                .filter(item -> item.getName().toLowerCase().contains(searchTarget) ||
+                        item.getDescription().toLowerCase().contains(searchTarget)
+                )
                 .toList();
     }
 }

@@ -43,14 +43,14 @@ class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UpdateUserDto dto) {
         User dbUser = getUserByIdOrThrow(dto.getId());
-        if (dto.getName() != null) {
+        if (dto.getName() != null && !dto.getName().isBlank()) {
             dbUser.setName(dto.getName());
         }
-        if (dto.getEmail() != null) {
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
             dbUser.setEmail(dto.getEmail());
             validateUserEmailExists(dbUser);
         }
-        if (dto.getSurname() != null) {
+        if (dto.getSurname() != null && !dto.getSurname().isBlank()) {
             dbUser.setSurname(dto.getSurname());
         }
         log.info("Update user: {}", dbUser);

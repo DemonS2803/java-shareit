@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.common.exception.RepositoryException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +34,6 @@ class UserInMemoryRepository implements UserRepository {
         if (user == null) {
             throw new RepositoryException("Cannot update null user");
         }
-        if (!users.containsKey(user.getId())) {
-            throw new RepositoryException("Cannot update non existing user");
-        }
         log.info("Updating user {}", user);
         users.put(user.getId(), user);
         return user;
@@ -45,9 +41,6 @@ class UserInMemoryRepository implements UserRepository {
 
     @Override
     public User delete(Long id) {
-        if (!users.containsKey(id)) {
-            throw new NotFoundException("Cannot delete non existing user");
-        }
         User user = users.remove(id);
         log.info("Deleted user {}", user);
         return user;

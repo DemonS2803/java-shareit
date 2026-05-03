@@ -39,10 +39,10 @@ class ItemServiceImpl implements ItemService {
             throw new ActionNotPermittedForUserException("User " + ownerId + " is not owner of item " + dto.getId());
         }
         log.info("Updating item: {} with ownerId: {}", dto, ownerId);
-        if (dto.getName() != null) {
+        if (dto.getName() != null && !dto.getName().isBlank()) {
             dbItem.setName(dto.getName());
         }
-        if (dto.getDescription() != null) {
+        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
             dbItem.setDescription(dto.getDescription());
         }
         if (dto.getAvailable() != null) {

@@ -49,7 +49,7 @@ class ItemServiceImpl implements ItemService {
             dbItem.setAvailable(dto.getAvailable());
         }
 
-        return ItemMapper.toDto(itemRepository.update(dbItem));
+        return ItemMapper.toDto(itemRepository.save(dbItem));
     }
 
     @Override
@@ -66,13 +66,15 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItems(String text) {
-        log.debug("Search items by text: {}", text);
+        log.info("Search items by text: {}", text);
         if (text == null || text.isEmpty()) {
             return new ArrayList<>();
         }
-        return itemRepository.searchAvailableItems(text).stream()
+        List<ItemDto> items = itemRepository.searchAvailableItems(text).stream()
                 .map(ItemMapper::toDto)
                 .toList();
+        log.info("Found items: {}", items);
+        return items;
     }
 
     @Override

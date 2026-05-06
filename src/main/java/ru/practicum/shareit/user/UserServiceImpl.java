@@ -54,12 +54,12 @@ class UserServiceImpl implements UserService {
             dbUser.setSurname(dto.getSurname());
         }
         log.info("Update user: {}", dbUser);
-        return UserMapper.toDto(userRepository.update(dbUser));
+        return UserMapper.toDto(userRepository.save(dbUser));
     }
 
     @Override
     public List<UserDto> getUsers() {
-        return userRepository.findAllUsers().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toDto)
                 .toList();
     }
@@ -68,7 +68,8 @@ class UserServiceImpl implements UserService {
     public UserDto deleteUser(Long id) {
         User user = getUserByIdOrThrow(id);
         log.info("Delete user: {}", user);
-        return UserMapper.toDto(userRepository.delete(id));
+        userRepository.deleteById(id);
+        return UserMapper.toDto(user);
     }
 
     private void validateUser(User user) {

@@ -27,9 +27,14 @@ class UserServiceImpl implements UserService {
         return UserMapper.toDto(user);
     }
 
+    @Override
+    public User getUserEntityById(Long id) {
+        return getUserByIdOrThrow(id);
+    }
+
     private User getUserByIdOrThrow(Long id) {
         return userRepository.findUserById(id)
-                .orElseThrow(() -> new NotFoundException("User with id " + id + "not found"));
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
     }
 
     @Override

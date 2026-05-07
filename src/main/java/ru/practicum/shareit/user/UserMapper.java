@@ -4,7 +4,7 @@ import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
-class UserMapper {
+public class UserMapper {
 
     public static UserDto toDto(User user) {
         UserDto dto = new UserDto();

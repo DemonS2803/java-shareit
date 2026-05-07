@@ -2,48 +2,78 @@ package ru.practicum.shareit.item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingRequestState;
+import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.NearestBookingsDto;
 import ru.practicum.shareit.common.exception.ActionNotPermittedForUserException;
 import ru.practicum.shareit.common.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@Transactional
 class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
+    private final CommentRepository commentRepository;
     private final UserService userService;
+    private final BookingService bookingService;
+
+    // Циклические зав-ти это плохо, но а как лучше?
+    // 1. Опять же хочется, чтобы взаимодействие между пакетами проходило только по интерфейсам сервисов
+    // 2. Но как мне тогда получить ближайшие даты бронирования? по-хорошему через сервис (но букинг сервису тоже нужно
+    // внедрить айтем сервис (цикл...)
+    // 3. Сделать репозитории публичными? тоже не круто..
+    // Как быть...?
+    @Autowired
+    public ItemServiceImpl(
+            ItemRepository itemRepository,
+            CommentRepository commentRepository,
+            UserService userService,
+            @Lazy BookingService bookingService) {
+        this.itemRepository = itemRepository;
+        this.commentRepository = commentRepository;
+        this.userService = userService;
+        this.bookingService = bookingService;
+    }
 
     @Override
     public ItemDto createItem(CreateItemDto dto, Long ownerId) {
-        userService.getUserById(ownerId);
+        User owner = userService.getUserEntityById(ownerId);
         log.info("Create new item: {}", dto);
         Item item = ItemMapper.fromDto(dto);
-        item.setOwnerId(ownerId);
+        item.setOwner(owner);
         return ItemMapper.toDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto updateItem(UpdateItemDto dto, Long ownerId) {
-        Item dbItem = getItemOrThrow(dto.getId());
-        if (!Objects.equals(dbItem.getOwnerId(), ownerId)) {
+        Item dbItem = getItemByIdOrThrow(dto.getId());
+        if (!Objects.equals(dbItem.getOwner().getId(), ownerId)) {
             throw new ActionNotPermittedForUserException("User " + ownerId + " is not owner of item " + dto.getId());
         }
         log.info("Updating item: {} with ownerId: {}", dto, ownerId);
         if (dto.getName() != null && !dto.getName().isBlank()) {
-            dbItem.setName(dto.getName());
+            dbItem.setName(dto.getName().trim());
         }
         if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
-            dbItem.setDescription(dto.getDescription());
+            dbItem.setDescription(dto.getDescription().trim());
         }
         if (dto.getAvailable() != null) {
             dbItem.setAvailable(dto.getAvailable());
@@ -53,13 +83,18 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItem(Long id) {
+    public ItemDto getItemById(Long id) {
         log.debug("Get item by id: {}", id);
-        Item item = getItemOrThrow(id);
+        Item item = getItemByIdOrThrow(id);
         return ItemMapper.toDto(item);
     }
 
-    private Item getItemOrThrow(Long id) {
+    @Override
+    public Item getItemEntityById(Long id) {
+        return getItemByIdOrThrow(id);
+    }
+
+    private Item getItemByIdOrThrow(Long id) {
         return itemRepository.findItemById(id)
                 .orElseThrow(() -> new NotFoundException("Item with id " + id + " not found"));
     }
@@ -79,11 +114,42 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getUserItems(Long userId) {
-        userService.getUserById(userId);
+        userService.getUserEntityById(userId);
         log.debug("Get user items by ownerId: {}", userId);
-        return itemRepository.findItemsByOwnerId(userId).stream()
-                .map(ItemMapper::toDto)
-                .toList();
+        List<Item> userItems = itemRepository.findItemsByOwnerId(userId);
+        List<ItemDto> itemDtos = userItems.stream().map(ItemMapper::toDto).toList();
+        List<Long> userItemsId = userItems.stream().map(Item::getId).toList();
+
+        Map<Long, NearestBookingsDto> nearestBookingsMap = bookingService.getNearestBookingsForItems(userItemsId);
+        itemDtos.forEach(item -> {
+            NearestBookingsDto nearestDto = nearestBookingsMap.getOrDefault(item.getId(), new NearestBookingsDto());
+            if (nearestDto.getPrevious().isPresent()) {
+                item.setLastBooking(nearestDto.getPrevious().get().getEnd());
+            }
+            if (nearestDto.getNext().isPresent()) {
+                item.setNextBooking(nearestDto.getNext().get().getStart());
+            }
+        });
+        return itemDtos;
+    }
+
+    @Override
+    public CommentDto commentItem(CreateCommentDto createDto) {
+        User user = userService.getUserEntityById(createDto.getUserId());
+        Item item = getItemByIdOrThrow(createDto.getItemId());
+        if (!checkUserHadPastBookingForItem(user.getId(), item.getId())) {
+            throw new CommentBadRequestException("User not allower to create comment for item " + item.getId());
+        }
+
+        log.info("Create comment {}", createDto);
+        Comment comment = new Comment(item, user, createDto.getText());
+        return ItemMapper.toDto(commentRepository.save(comment));
+    }
+
+    private boolean checkUserHadPastBookingForItem(Long userId, Long itemId) {
+        List<BookingDto> userBookings = bookingService.getBookingsByBooker(userId, BookingRequestState.PAST);
+        return userBookings.stream()
+                .anyMatch(booking -> Objects.equals(booking.getItem().getId(), itemId));
     }
 
 }

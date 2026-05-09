@@ -35,8 +35,7 @@ public class Item {
     @JoinColumn(name = "owner_id")
     private User owner;
     private boolean available;
-    @OneToMany
-    @JoinColumn(name = "item_id")
+    @OneToMany(mappedBy = "item")
     private List<Comment> comments;
 
     public Item(Long id, String name, String description, User owner, boolean available) {

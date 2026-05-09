@@ -1,6 +1,7 @@
 package ru.practicum.shareit.common.web.controller;
 
 import ru.practicum.shareit.common.exception.ActionNotPermittedForUserException;
+import ru.practicum.shareit.common.exception.BookingUnavailableException;
 import ru.practicum.shareit.common.exception.DuplicateDataException;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.common.web.dto.ErrorResponseDto;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.common.exception.CommentBadRequestException;
 
 @Slf4j
 @RestControllerAdvice
@@ -48,6 +50,20 @@ public class ExceptionHandlerController {
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(final NotFoundException ex) {
         log.error("Not found exception: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(BookingUnavailableException.class)
+    public ResponseEntity<?> handleBookingUnavailableException(BookingUnavailableException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity.status(400)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CommentBadRequestException.class)
+    public ResponseEntity<?> handleCommentBadRequest(CommentBadRequestException ex) {
+        log.error("User couldn't create comment");
+        return ResponseEntity.status(400)
                 .body(new ErrorResponseDto(ex.getMessage()));
     }
 

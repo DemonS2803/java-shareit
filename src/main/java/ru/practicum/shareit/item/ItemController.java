@@ -4,7 +4,6 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
-import ru.practicum.shareit.common.web.dto.ErrorResponseDto;
 import ru.practicum.shareit.common.web.util.HttpConstants;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -14,8 +13,6 @@ import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,13 +77,6 @@ public class ItemController {
         createCommentDto.setItemId(itemId);
         createCommentDto.setUserId(userId);
         return itemService.commentItem(createCommentDto);
-    }
-
-    @ExceptionHandler(CommentBadRequestException.class)
-    public ResponseEntity<?> handleCommentBadRequest(CommentBadRequestException ex) {
-        log.error("User couldn't create comment");
-        return ResponseEntity.status(400)
-                .body(new ErrorResponseDto(ex.getMessage()));
     }
 
 }

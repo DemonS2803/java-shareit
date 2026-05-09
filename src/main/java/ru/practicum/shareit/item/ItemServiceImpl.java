@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.BookingRequestState;
-import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.BookingItemInfoService;
 import ru.practicum.shareit.booking.dto.NearestBookingsDto;
 import ru.practicum.shareit.common.exception.ActionNotPermittedForUserException;
+import ru.practicum.shareit.common.exception.CommentBadRequestException;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -28,30 +26,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
     private final UserService userService;
-    private final BookingService bookingService;
-
-    // Циклические зав-ти это плохо, но а как лучше?
-    // 1. Опять же хочется, чтобы взаимодействие между пакетами проходило только по интерфейсам сервисов
-    // 2. Но как мне тогда получить ближайшие даты бронирования? по-хорошему через сервис (но букинг сервису тоже нужно
-    // внедрить айтем сервис (цикл...)
-    // 3. Сделать репозитории публичными? тоже не круто..
-    // Как быть...?
-    @Autowired
-    public ItemServiceImpl(
-            ItemRepository itemRepository,
-            CommentRepository commentRepository,
-            UserService userService,
-            @Lazy BookingService bookingService) {
-        this.itemRepository = itemRepository;
-        this.commentRepository = commentRepository;
-        this.userService = userService;
-        this.bookingService = bookingService;
-    }
+    private final BookingItemInfoService bookingItemInfoService;
 
     @Override
     public ItemDto createItem(CreateItemDto dto, Long ownerId) {
@@ -120,7 +101,7 @@ class ItemServiceImpl implements ItemService {
         List<ItemDto> itemDtos = userItems.stream().map(ItemMapper::toDto).toList();
         List<Long> userItemsId = userItems.stream().map(Item::getId).toList();
 
-        Map<Long, NearestBookingsDto> nearestBookingsMap = bookingService.getNearestBookingsForItems(userItemsId);
+        Map<Long, NearestBookingsDto> nearestBookingsMap = bookingItemInfoService.getNearestBookingsForItems(userItemsId);
         itemDtos.forEach(item -> {
             NearestBookingsDto nearestDto = nearestBookingsMap.getOrDefault(item.getId(), new NearestBookingsDto());
             if (nearestDto.getPrevious().isPresent()) {
@@ -137,19 +118,13 @@ class ItemServiceImpl implements ItemService {
     public CommentDto commentItem(CreateCommentDto createDto) {
         User user = userService.getUserEntityById(createDto.getUserId());
         Item item = getItemByIdOrThrow(createDto.getItemId());
-        if (!checkUserHadPastBookingForItem(user.getId(), item.getId())) {
+        if (!bookingItemInfoService.isUserHadPastBookingForItem(user.getId(), item.getId())) {
             throw new CommentBadRequestException("User not allower to create comment for item " + item.getId());
         }
 
         log.info("Create comment {}", createDto);
         Comment comment = new Comment(item, user, createDto.getText());
         return ItemMapper.toDto(commentRepository.save(comment));
-    }
-
-    private boolean checkUserHadPastBookingForItem(Long userId, Long itemId) {
-        List<BookingDto> userBookings = bookingService.getBookingsByBooker(userId, BookingRequestState.PAST);
-        return userBookings.stream()
-                .anyMatch(booking -> Objects.equals(booking.getItem().getId(), itemId));
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import ru.practicum.shareit.ShareItApp;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
+import ru.practicum.shareit.common.exception.BookingUnavailableException;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.common.testutil.DatabaseCleaner;
 import ru.practicum.shareit.item.ItemService;

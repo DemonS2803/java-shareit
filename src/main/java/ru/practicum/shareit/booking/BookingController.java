@@ -6,13 +6,10 @@ import jakarta.validation.Valid;
 
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
-import ru.practicum.shareit.common.web.dto.ErrorResponseDto;
 import ru.practicum.shareit.common.web.util.HttpConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -73,13 +67,6 @@ public class BookingController {
             @RequestParam("approved") Boolean approved) {
         log.info("User {} wanna approve ({}) booking {}", userId, approved, bookingId);
         return bookingService.approveBooking(approved, bookingId, userId);
-    }
-
-    @ExceptionHandler(BookingUnavailableException.class)
-    public ResponseEntity<?> handleBookingUnavailableException(BookingUnavailableException ex) {
-        log.error(ex.getMessage());
-        return ResponseEntity.status(400)
-                .body(new ErrorResponseDto(ex.getMessage()));
     }
 
 }

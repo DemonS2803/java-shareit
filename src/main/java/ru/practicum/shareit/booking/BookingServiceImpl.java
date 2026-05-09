@@ -1,16 +1,13 @@
 package ru.practicum.shareit.booking;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
-import ru.practicum.shareit.booking.dto.NearestBookingsDto;
 import ru.practicum.shareit.common.exception.ActionNotPermittedForUserException;
+import ru.practicum.shareit.common.exception.BookingApproveFailedException;
+import ru.practicum.shareit.common.exception.BookingUnavailableException;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemService;
@@ -58,7 +55,11 @@ class BookingServiceImpl implements BookingService {
             log.error("User {} can't approve booking {}", userId, bookingId);
             throw new ActionNotPermittedForUserException("User can't approve booking for item, he is not owned");
         }
+        if (!BookingState.WAITING.equals(dbBooking.getState())) {
+            throw new BookingApproveFailedException("User can't approve booking with status " + dbBooking.getState());
+        }
         userService.getUserEntityById(userId);
+
 
         BookingState newState = approve ? BookingState.APPROVED : BookingState.REJECTED;
         log.info("Set status {} for booking {}", newState, bookingId);
@@ -115,41 +116,6 @@ class BookingServiceImpl implements BookingService {
         };
         log.debug("Found {} bookings for user {} with request state {}", filteredBookings.size(), ownerId, state);
         return BookingMapper.toDto(filteredBookings);
-    }
-
-    @Override
-    public Map<Long, NearestBookingsDto> getNearestBookingsForItems(List<Long> itemsId) {
-        log.info("Get nearest bookings for items {}", itemsId);
-        List<Booking> itemBookings = bookingRepository.findBookingsByItemIdIn(itemsId);
-        Map<Long, NearestBookingsDto> resultMap = new HashMap<>();
-        itemsId.forEach(id -> resultMap.put(id, new NearestBookingsDto()));
-
-        for (Booking booking : itemBookings) {
-            Long itemId = booking.getItem().getId();
-            LocalDateTime now = LocalDateTime.now();
-            if (!resultMap.containsKey(itemId)) {
-                log.error("Item {} not included in repo query. Damn", itemId);
-                resultMap.putIfAbsent(itemId, new NearestBookingsDto());
-            }
-
-            // case for previous
-            if (now.isAfter(booking.getToTime())) {
-                Optional<BookingDto> prev = resultMap.get(itemId).getPrevious();
-                // set value if null or older
-                if (prev.isEmpty() || prev.get().getEnd().isAfter(booking.getToTime())) {
-                    resultMap.get(itemId).setPrevious(BookingMapper.toDto(booking));
-                }
-            }
-            // case for next
-            if (now.isBefore(booking.getFromTime())) {
-                Optional<BookingDto> next = resultMap.get(itemId).getNext();
-                // set value if null or earlier
-                if (next.isEmpty() || next.get().getStart().isBefore(booking.getFromTime())) {
-                    resultMap.get(itemId).setNext(BookingMapper.toDto(booking));
-                }
-            }
-        }
-        return resultMap;
     }
 
 }

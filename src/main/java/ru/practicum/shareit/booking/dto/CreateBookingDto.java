@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 
@@ -23,7 +24,7 @@ public class CreateBookingDto {
     @FutureOrPresent(message = "Booking mustn't start in past")
     private LocalDateTime start;
     @NotNull(message = "Booking must have end time")
-    @FutureOrPresent(message = "Booking mustn't end in past")
+    @Future(message = "Booking end time must be future")
     private LocalDateTime end;
 
 

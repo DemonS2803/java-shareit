@@ -5,6 +5,8 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import ru.practicum.shareit.common.web.util.HttpConstants;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
@@ -22,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -35,7 +34,7 @@ public class ItemController {
 
     @PostMapping("")
     public ItemDto createItem(@RequestBody @Valid CreateItemDto createDto,
-                              @RequestHeader(value = HttpConstants.SHARER_USER_PARAM) Long userId) {
+                              @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
         log.info("Create new item: {}, ownerId: {}", createDto, userId);
         return itemService.createItem(createDto, userId);
     }
@@ -43,7 +42,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@PathVariable Long itemId,
                               @RequestBody UpdateItemDto updateDto,
-                              @RequestHeader(value = HttpConstants.SHARER_USER_PARAM) Long userId) {
+                              @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
         updateDto.setId(itemId);
         log.info("Update item: {}, ownerId: {}", updateDto, userId);
         return itemService.updateItem(updateDto, userId);
@@ -52,11 +51,11 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemDto getItem(@PathVariable Long itemId) {
         log.debug("Get item: {}", itemId);
-        return itemService.getItem(itemId);
+        return itemService.getItemById(itemId);
     }
 
     @GetMapping("")
-    public List<ItemDto> getUserItems(@RequestHeader(value = HttpConstants.SHARER_USER_PARAM) Long userId) {
+    public List<ItemDto> getUserItems(@RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
         log.debug("Get user items: {}", userId);
         return itemService.getUserItems(userId);
     }
@@ -65,6 +64,19 @@ public class ItemController {
     public List<ItemDto> searchItemByText(@RequestParam(value = "text") String text) {
         log.debug("Search item by text: {}", text);
         return itemService.searchItems(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto commentItem(
+            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId,
+            @PathVariable("itemId") Long itemId,
+            @RequestBody @Valid CreateCommentDto createCommentDto) {
+        log.info("User {} comment item {} with text: {}", userId, itemId, createCommentDto.getText());
+        // Насколько правильно так подавать параметры? Или лучше 3 параметра
+        // Вроде как чем в методе меньше входных параметров, тем лучше?
+        createCommentDto.setItemId(itemId);
+        createCommentDto.setUserId(userId);
+        return itemService.commentItem(createCommentDto);
     }
 
 }

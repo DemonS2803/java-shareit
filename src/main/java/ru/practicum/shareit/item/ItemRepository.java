@@ -3,18 +3,28 @@ package ru.practicum.shareit.item;
 import java.util.List;
 import java.util.Optional;
 
-interface ItemRepository {
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-    Item save(Item item);
+@Repository
+interface ItemRepository extends JpaRepository<Item, Long> {
 
-    Item update(Item item);
-
+    @EntityGraph(attributePaths = {"comments"})
     Optional<Item> findItemById(Long id);
 
-    List<Item> findAllItems();
-
+    @EntityGraph(attributePaths = {"comments"})
     List<Item> findItemsByOwnerId(Long ownerId);
 
-    List<Item> searchAvailableItems(String text);
+    @Query(value = """
+        select it from Item it
+        where it.available = true and (
+                lower(it.name) like concat('%', lower(:text), '%') or
+                lower(it.description) like concat('%', lower(:text), '%')
+            )
+    """)
+    List<Item> searchAvailableItems(@Param("text") String text);
 
 }

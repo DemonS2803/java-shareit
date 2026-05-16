@@ -26,13 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/items")
+@RequestMapping(HttpConstants.ITEM_API_PREFIX)
 @RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
 
-    @PostMapping("")
+    @PostMapping
     public ItemDto createItem(@RequestBody @Valid CreateItemDto createDto,
                               @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
         log.info("Create new item: {}, ownerId: {}", createDto, userId);
@@ -54,14 +54,14 @@ public class ItemController {
         return itemService.getItemById(itemId);
     }
 
-    @GetMapping("")
+    @GetMapping
     public List<ItemDto> getUserItems(@RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
         log.debug("Get user items: {}", userId);
         return itemService.getUserItems(userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemByText(@RequestParam(value = "text") String text) {
+    public List<ItemDto> searchItemByText(@RequestParam(value = HttpConstants.SEARCH_ITEM_TEXT_PARAM) String text) {
         log.debug("Search item by text: {}", text);
         return itemService.searchItems(text);
     }
@@ -72,8 +72,6 @@ public class ItemController {
             @PathVariable("itemId") Long itemId,
             @RequestBody @Valid CreateCommentDto createCommentDto) {
         log.info("User {} comment item {} with text: {}", userId, itemId, createCommentDto.getText());
-        // Насколько правильно так подавать параметры? Или лучше 3 параметра
-        // Вроде как чем в методе меньше входных параметров, тем лучше?
         createCommentDto.setItemId(itemId);
         createCommentDto.setUserId(userId);
         return itemService.commentItem(createCommentDto);

@@ -2,6 +2,7 @@ package ru.practicum.shareit.common.web.controller;
 
 import ru.practicum.shareit.common.exception.ActionNotPermittedForUserException;
 import ru.practicum.shareit.common.exception.BookingUnavailableException;
+import ru.practicum.shareit.common.exception.CommentBadRequestException;
 import ru.practicum.shareit.common.exception.DuplicateDataException;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.common.web.dto.ErrorResponseDto;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.common.exception.CommentBadRequestException;
 
 @Slf4j
 @RestControllerAdvice

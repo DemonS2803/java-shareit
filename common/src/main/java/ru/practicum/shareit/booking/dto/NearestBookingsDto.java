@@ -4,9 +4,11 @@ import java.util.Optional;
 
 import lombok.Setter;
 import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Setter
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NearestBookingsDto {
 
     private BookingDto previous;

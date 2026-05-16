@@ -4,4 +4,5 @@ public enum BookingState {
     WAITING,
     APPROVED,
     REJECTED;
+
 }

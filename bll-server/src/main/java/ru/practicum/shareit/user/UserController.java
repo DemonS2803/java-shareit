@@ -2,8 +2,7 @@ package ru.practicum.shareit.user;
 
 import java.util.List;
 
-import jakarta.validation.Valid;
-
+import ru.practicum.shareit.common.web.util.HttpConstants;
 import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -21,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = HttpConstants.USER_API_PREFIX)
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("")
+    @GetMapping
     public List<UserDto> getAllUsers() {
         log.debug("Fetching all users");
         return userService.getUsers();
@@ -39,14 +38,14 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @PostMapping("")
-    public UserDto createUser(@RequestBody @Valid final CreateUserDto createDto) {
+    @PostMapping
+    public UserDto createUser(@RequestBody final CreateUserDto createDto) {
         log.info("Create new user request: {}", createDto);
         return userService.saveUser(createDto);
     }
 
     @PatchMapping("/{id}")
-    public UserDto updateUser(@RequestBody @Valid final UpdateUserDto updateDto,
+    public UserDto updateUser(@RequestBody final UpdateUserDto updateDto,
                               @PathVariable final Long id) {
         updateDto.setId(id);
         log.info("Update user request: {}", updateDto);

@@ -23,6 +23,7 @@ services:
     depends_on:
       - db
     environment:
+      - SERVER_ADDRESS=http://localhost:8888
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
       - SPRING_DATASOURCE_USERNAME=shareit
       - SPRING_DATASOURCE_PASSWORD=shareit
@@ -36,5 +37,6 @@ services:
     depends_on:
       - bll-server
     environment:
-      - SHAREIT_SERVER_URL=http://server:9090
+      - SERVER_ADDRESS=http://localhost:8080
+      - SHAREIT_SERVER_URL=http://bll-server:8888
 

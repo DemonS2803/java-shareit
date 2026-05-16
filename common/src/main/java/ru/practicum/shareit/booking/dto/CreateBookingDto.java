@@ -11,11 +11,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Data
 @With
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateBookingDto {
 
     @NotNull(message = "Booking must have requested item id")

@@ -17,6 +17,7 @@
 	<name>ShareIt</name>
 
     <modules>
+        <module>common</module>
         <module>bll-server</module>
         <module>gateway</module>
     </modules>

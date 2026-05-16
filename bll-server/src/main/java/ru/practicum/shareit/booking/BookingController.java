@@ -10,6 +10,7 @@ import ru.practicum.shareit.common.web.util.HttpConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,10 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/bookings")
+@RequestMapping(path = HttpConstants.BOOKING_API_PREFIX)
 public class BookingController {
 
     private final BookingService bookingService;
+
+    @Value("${shareit.gateway.url}")
+    private String gatewayUrl;
 
     @GetMapping("/{bookingId}")
     public BookingDto getBookingInfo(
@@ -38,7 +42,7 @@ public class BookingController {
 
     @GetMapping("")
     public Collection<BookingDto> getUserBookingsInfo(
-            @RequestParam(value = "state", defaultValue = "ALL") BookingRequestState state,
+            @RequestParam(value = HttpConstants.BOOKING_STATE_PARAM, defaultValue = "ALL") BookingRequestState state,
             @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
         log.debug("User {} get {} bookings", userId, state);
         return bookingService.getBookingsByBooker(userId, state);
@@ -46,7 +50,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public Collection<BookingDto> getOwnerBookingsInfo(
-            @RequestParam(value = "state", defaultValue = "ALL") BookingRequestState state,
+            @RequestParam(value = HttpConstants.BOOKING_STATE_PARAM, defaultValue = "ALL") BookingRequestState state,
             @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
         log.debug("User {} get {} bookings", userId, state);
         return bookingService.getBookingsByOwner(userId, state);
@@ -64,7 +68,7 @@ public class BookingController {
     public BookingDto approveBooking(
             @PathVariable Long bookingId,
             @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId,
-            @RequestParam("approved") Boolean approved) {
+            @RequestParam(value = HttpConstants.APPROVE_BOOKING_PARAM) Boolean approved) {
         log.info("User {} wanna approve ({}) booking {}", userId, approved, bookingId);
         return bookingService.approveBooking(approved, bookingId, userId);
     }

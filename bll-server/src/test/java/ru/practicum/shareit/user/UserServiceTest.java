@@ -2,7 +2,7 @@ package ru.practicum.shareit.user;
 
 import java.util.List;
 
-import ru.practicum.shareit.ShareItApp;
+import ru.practicum.shareit.BllServerApp;
 import ru.practicum.shareit.common.exception.DuplicateDataException;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.common.testutil.DatabaseCleaner;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = ShareItApp.class)
+        classes = BllServerApp.class)
 public class UserServiceTest {
 
     @Autowired

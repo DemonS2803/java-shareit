@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking;
 
 import java.io.UnsupportedEncodingException;
 
-import ru.practicum.shareit.ShareItApp;
+import ru.practicum.shareit.BllServerApp;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.common.testutil.DatabaseCleaner;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = ShareItApp.class)
+        classes = BllServerApp.class)
 @AutoConfigureMockMvc
 public class BookingControllerTest {
 

@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking;
 
 import java.util.List;
 
-import ru.practicum.shareit.ShareItApp;
+import ru.practicum.shareit.BllServerApp;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.common.exception.BookingUnavailableException;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = ShareItApp.class)
+        classes = BllServerApp.class)
 public class BookingServiceTest {
 
     @Autowired

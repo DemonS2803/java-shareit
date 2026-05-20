@@ -29,9 +29,6 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    @Value("${shareit.gateway.url}")
-    private String gatewayUrl;
-
     @GetMapping("/{bookingId}")
     public BookingDto getBookingInfo(
             @PathVariable Long bookingId,

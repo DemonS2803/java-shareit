@@ -1,5 +1,7 @@
 drop table if exists comments;
 drop table if exists bookings;
+drop table if exists item_request_responses;
+drop table if exists item_requests;
 drop table if exists items;
 drop table if exists users;
 
@@ -35,3 +37,17 @@ create table if not exists comments (
     text text not null,
     created timestamp default current_timestamp
 );
+
+create table if not exists item_requests (
+    id bigserial primary key not null,
+    description text not null,
+    user_id bigint references users(id),
+    item_id bigint references items(id),
+    created timestamp default current_timestamp
+);
+
+create table if not exists item_request_responses (
+    item_request_id bigint references item_requests(id),
+    item_id bigint references items(id),
+    unique (item_request_id, item_id)
+)

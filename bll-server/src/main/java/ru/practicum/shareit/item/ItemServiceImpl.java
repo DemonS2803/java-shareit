@@ -17,6 +17,7 @@ import ru.practicum.shareit.item.dto.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
+import ru.practicum.shareit.request.ItemRequestResponseService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -33,6 +34,7 @@ class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final BookingItemInfoService bookingItemInfoService;
+    private final ItemRequestResponseService itemRequestResponseService;
 
     @Override
     public ItemDto createItem(CreateItemDto dto, Long ownerId) {
@@ -40,7 +42,13 @@ class ItemServiceImpl implements ItemService {
         log.info("Create new item: {}", dto);
         Item item = ItemMapper.fromDto(dto);
         item.setOwner(owner);
-        return ItemMapper.toDto(itemRepository.save(item));
+        item = itemRepository.save(item);
+
+        if (dto.getRequestId() != null) {
+            log.info("Item {} is created as a request for {}. Adding to responses list", item.getId(), dto.getRequestId());
+            itemRequestResponseService.addItemRequestResponse(dto.getRequestId(), item.getId());
+        }
+        return ItemMapper.toDto(item);
     }
 
     @Override

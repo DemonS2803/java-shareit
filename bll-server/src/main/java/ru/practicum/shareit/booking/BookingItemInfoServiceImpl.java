@@ -58,8 +58,9 @@ public class BookingItemInfoServiceImpl implements BookingItemInfoService {
 
     @Override
     public boolean isUserHadPastBookingForItem(Long userId, Long itemId) {
-        List<Booking> userBookings = bookingRepository.findPastBookingsByBookerId(userId);
+        List<Booking> userBookings = bookingRepository.findBookingsByBookerId(userId);
         return userBookings.stream()
+                .filter(booking -> booking.getToTime().isBefore(LocalDateTime.now()))
                 .anyMatch(booking -> Objects.equals(booking.getItem().getId(), itemId));
     }
 

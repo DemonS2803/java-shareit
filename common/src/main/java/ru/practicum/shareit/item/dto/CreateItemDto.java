@@ -22,5 +22,11 @@ public class CreateItemDto {
     private String description;
     @NotNull(message = "New item must have 'available' property")
     private Boolean available;
+    private Long requestId;
 
+    public CreateItemDto(String name, String description, Boolean available) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+    }
 }

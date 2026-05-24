@@ -28,7 +28,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = """
         select book from Booking book
-         where book.toTime < current_timestamp
+         where book.toTime <= current_timestamp
             and book.user.id = :bookerId
     """)
     List<Booking> findPastBookingsByBookerId(@Param("bookerId") Long bookerId);

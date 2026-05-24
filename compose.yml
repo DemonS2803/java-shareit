@@ -23,13 +23,8 @@ services:
     container_name: shareit-server
     expose:
       - "8888"
-#      - "8080"
-#    ports:
-#      - "8888:8888"
-#      - "8001:8001"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       - SERVER_PORT=8888
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
@@ -39,17 +34,12 @@ services:
       - TZ=Europe/Moscow
 
   gateway:
-#    build:
-#      context: .
-#      dockerfile: gateway/Dockerfile
     build: gateway
     image: shareit-gateway
-    container_name: shareit-gateway
     expose:
       - "8080"
     ports:
       - "8080:8080"
-#      - "8000:8000"
     depends_on:
       server:
         condition: service_started

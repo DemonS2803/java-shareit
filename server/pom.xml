@@ -11,7 +11,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>bll-server</artifactId>
+    <artifactId>server</artifactId>
     <name>ShareIt Server</name>
     <version>1.0.0</version>
 

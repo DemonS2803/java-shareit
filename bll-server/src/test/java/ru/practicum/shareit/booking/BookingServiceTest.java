@@ -104,6 +104,11 @@ public class BookingServiceTest {
 
         List<BookingDto> ownerBookings = bookingService.getBookingsByOwner(VALID_USER_ID_1, BookingRequestState.ALL, 0, 10);
         assertEquals(3, ownerBookings.size());
+
+        ownerBookings = bookingService.getBookingsByOwner(VALID_USER_ID_1, BookingRequestState.FUTURE, 0, 10);
+        ownerBookings = bookingService.getBookingsByOwner(VALID_USER_ID_1, BookingRequestState.PAST, 0, 10);
+        ownerBookings = bookingService.getBookingsByOwner(VALID_USER_ID_1, BookingRequestState.CURRENT, 0, 10);
+        ownerBookings = bookingService.getBookingsByOwner(VALID_USER_ID_1, BookingRequestState.WAITING, 0, 10);
     }
 
     @Test
@@ -115,6 +120,11 @@ public class BookingServiceTest {
 
         List<BookingDto> ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.ALL, 0, 10);
         assertEquals(2, ownerBookings.size());
+
+        ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.FUTURE, 0, 10);
+        ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.PAST, 0, 10);
+        ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.CURRENT, 0, 10);
+        ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.WAITING, 0, 10);
     }
 
     @Test

@@ -11,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
@@ -24,6 +26,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "bookings")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
 
     @Id
@@ -38,5 +42,7 @@ public class Booking {
     private boolean approved;
     private LocalDateTime fromTime;
     private LocalDateTime toTime;
+
+
 
 }

@@ -506,4 +506,25 @@ class ItemServiceTest {
         assertTrue(owner2Items.stream().allMatch(i -> i.getOwner().getId().equals(VALID_USER_2.getId())));
     }
 
+
+    @Test
+    void commentItem_shouldSuccess() {
+        // Create items for owner1
+        ItemDto owner1Item1 = itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_1.getId());
+        ItemDto owner1Item2 = itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_1.getId());
+
+        // Create item for owner2
+        ItemDto owner2Item = itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_2.getId());
+
+        // Get items for owner1
+        List<ItemDto> owner1Items = itemService.getUserItems(VALID_USER_1.getId(), 0, 10);
+        assertEquals(2, owner1Items.size());
+        assertTrue(owner1Items.stream().allMatch(i -> i.getOwner().getId().equals(VALID_USER_1.getId())));
+
+        // Get items for owner2
+        List<ItemDto> owner2Items = itemService.getUserItems(VALID_USER_2.getId(), 0, 10);
+        assertEquals(1, owner2Items.size());
+        assertTrue(owner2Items.stream().allMatch(i -> i.getOwner().getId().equals(VALID_USER_2.getId())));
+    }
+
 }

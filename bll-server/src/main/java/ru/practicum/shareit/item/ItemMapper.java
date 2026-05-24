@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.UpdateItemDto;
 import ru.practicum.shareit.user.UserMapper;
 
 public class ItemMapper {
@@ -36,15 +35,6 @@ public class ItemMapper {
     public static Item fromDto(CreateItemDto dto) {
         Item item = new Item();
         item.setName(dto.getName().trim());
-        item.setDescription(dto.getDescription());
-        item.setAvailable(dto.getAvailable());
-        return item;
-    }
-
-    public static Item fromDto(UpdateItemDto dto) {
-        Item item = new Item();
-        item.setId(dto.getId());
-        item.setName(dto.getName());
         item.setDescription(dto.getDescription());
         item.setAvailable(dto.getAvailable());
         return item;

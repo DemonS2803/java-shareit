@@ -41,9 +41,4 @@ public class ItemRequest {
     )
     private List<Item> responses;
 
-    public ItemRequest(String description, User user) {
-        this.description = description;
-        this.user = user;
-    }
-
 }

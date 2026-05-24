@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request;
 
-import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.request.dto.CreateItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
@@ -18,7 +17,13 @@ public class ItemRequestMapper {
         List<ItemRequestResponseDto> responses = null;
         if (request.getResponses() != null) {
             responses = request.getResponses().stream()
-                    .map(ItemRequestMapper::toDto)
+                    .map(item -> {
+                        ItemRequestResponseDto response = new ItemRequestResponseDto();
+                        response.setItemId(item.getId());
+                        response.setName(item.getName());
+                        response.setOwnerId(item.getOwner().getId());
+                        return response;
+                    })
                     .toList();
         }
 
@@ -28,14 +33,6 @@ public class ItemRequestMapper {
                 .created(request.getCreated())
                 .items(responses)
                 .build();
-    }
-
-    public static ItemRequestResponseDto toDto(Item item) {
-        ItemRequestResponseDto response = new ItemRequestResponseDto();
-        response.setItemId(item.getId());
-        response.setName(item.getName());
-        response.setOwnerId(item.getOwner().getId());
-        return response;
     }
 
     public static ItemRequest fromDto(CreateItemRequestDto createDto) {

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,9 +93,9 @@ class BookingServiceImpl implements BookingService {
         log.debug("Get bookings bo booker {}", bookerId);
         List<Booking> filteredBookings = switch (state) {
             case ALL -> bookingRepository.findBookingsByBookerId(bookerId);
-            case PAST -> bookingRepository.findPastBookingsByBookerId(bookerId);
-            case CURRENT -> bookingRepository.findCurrentBookingsByBookerId(bookerId);
-            case FUTURE -> bookingRepository.findFutureBookingsByBookerId(bookerId);
+            case PAST -> bookingRepository.findPastBookingsByBookerId(bookerId, LocalDateTime.now());
+            case CURRENT -> bookingRepository.findCurrentBookingsByBookerId(bookerId, LocalDateTime.now());
+            case FUTURE -> bookingRepository.findFutureBookingsByBookerId(bookerId, LocalDateTime.now());
             case WAITING -> bookingRepository.findBookingsByBookerIdAndState(bookerId, BookingState.WAITING);
             case REJECTED -> bookingRepository.findBookingsByBookerIdAndState(bookerId, BookingState.REJECTED);
         };
@@ -108,9 +109,9 @@ class BookingServiceImpl implements BookingService {
         log.debug("Get bookings by owner {}", ownerId);
         List<Booking> filteredBookings = switch (state) {
             case ALL -> bookingRepository.findBookingsByOwnerId(ownerId);
-            case PAST -> bookingRepository.findPastBookingsByOwnerId(ownerId);
-            case CURRENT -> bookingRepository.findCurrentBookingsByOwnerId(ownerId);
-            case FUTURE -> bookingRepository.findFutureBookingsByOwnerId(ownerId);
+            case PAST -> bookingRepository.findPastBookingsByOwnerId(ownerId, LocalDateTime.now());
+            case CURRENT -> bookingRepository.findCurrentBookingsByOwnerId(ownerId, LocalDateTime.now());
+            case FUTURE -> bookingRepository.findFutureBookingsByOwnerId(ownerId, LocalDateTime.now());
             case WAITING -> bookingRepository.findBookingsByOwnerIdAndState(ownerId, BookingState.WAITING);
             case REJECTED -> bookingRepository.findBookingsByOwnerIdAndState(ownerId, BookingState.REJECTED);
         };

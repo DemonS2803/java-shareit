@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -28,25 +29,25 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = """
         select book from Booking book
-         where book.toTime <= current_timestamp
+         where book.toTime <= :now
             and book.user.id = :bookerId
     """)
-    List<Booking> findPastBookingsByBookerId(@Param("bookerId") Long bookerId);
+    List<Booking> findPastBookingsByBookerId(@Param("bookerId") Long bookerId, @Param("now") LocalDateTime now);
 
     @Query(value = """
         select book from Booking book
-         where book.toTime > current_timestamp
-             and book.fromTime < current_timestamp
+         where book.toTime > :now
+             and book.fromTime < :now
              and book.user.id = :bookerId
     """)
-    List<Booking> findCurrentBookingsByBookerId(@Param("bookerId") Long bookerId);
+    List<Booking> findCurrentBookingsByBookerId(@Param("bookerId") Long bookerId, @Param("now") LocalDateTime now);
 
     @Query(value = """
         select book from Booking book
-        where book.fromTime > current_timestamp
+        where book.fromTime > :now
              and book.user.id = :bookerId
     """)
-    List<Booking> findFutureBookingsByBookerId(@Param("bookerId") Long bookerId);
+    List<Booking> findFutureBookingsByBookerId(@Param("bookerId") Long bookerId, @Param("now") LocalDateTime now);
 
     @Query(value = """
         select book from Booking book
@@ -73,26 +74,26 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         select book from Booking book
             join Item it on book.item.id = it.id
             where it.owner.id = :ownerId
-                and book.toTime < current_timestamp
+                and book.toTime < :now
     """)
-    List<Booking> findPastBookingsByOwnerId(@Param("ownerId") Long ownerId);
+    List<Booking> findPastBookingsByOwnerId(@Param("ownerId") Long ownerId, @Param("now") LocalDateTime now);
 
     @Query(value = """
         select book from Booking book
          join Item it on book.item.id = it.id
             where it.owner.id = :ownerId
-                and book.toTime > current_timestamp
-                and book.fromTime < current_timestamp
+                and book.toTime > :now
+                and book.fromTime < :now
     """)
-    List<Booking> findCurrentBookingsByOwnerId(@Param("ownerId") Long ownerId);
+    List<Booking> findCurrentBookingsByOwnerId(@Param("ownerId") Long ownerId, @Param("now") LocalDateTime now);
 
     @Query(value = """
         select book from Booking book
         join Item it on book.item.id = it.id
             where it.owner.id = :ownerId
-                and book.fromTime > current_timestamp
+                and book.fromTime > :now
     """)
-    List<Booking> findFutureBookingsByOwnerId(@Param("ownerId") Long ownerId);
+    List<Booking> findFutureBookingsByOwnerId(@Param("ownerId") Long ownerId, @Param("now") LocalDateTime now);
 
     @Query(value = """
         select book from Booking book

@@ -4,6 +4,7 @@ import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
+import ru.practicum.shareit.request.dto.CreateItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
@@ -67,6 +68,10 @@ public class TestStubs {
             VALID_USER_1,
             ITEM_AVAILABLE
     );
+
+    // Item requests stubs
+    public static final CreateItemRequestDto VALID_CREATE_ITEMREQUEST_DTO =
+            new CreateItemRequestDto("Need a new gaming laptop");
 
     // Booking stubs
     public static final CreateBookingDto VALID_CREATE_BOOKING_DTO = new CreateBookingDto(

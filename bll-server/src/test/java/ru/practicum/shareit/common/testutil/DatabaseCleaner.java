@@ -13,6 +13,8 @@ public class DatabaseCleaner {
     public void cleanAllTables() {
         cleanComments();
         cleanBookings();
+        cleanItemRequestResponses();
+        cleanItemRequests();
         cleanItems();
         cleanUsers();
     }
@@ -25,6 +27,15 @@ public class DatabaseCleaner {
     public void cleanItems() {
         jdbcTemplate.execute("DELETE FROM items");
         jdbcTemplate.execute("ALTER TABLE items ALTER COLUMN id RESTART WITH 1");
+    }
+
+    public void cleanItemRequests() {
+        jdbcTemplate.execute("DELETE FROM item_requests");
+        jdbcTemplate.execute("ALTER TABLE item_requests ALTER COLUMN id RESTART WITH 1");
+    }
+
+    public void cleanItemRequestResponses() {
+        jdbcTemplate.execute("DELETE FROM item_request_responses");
     }
 
     public void cleanBookings() {

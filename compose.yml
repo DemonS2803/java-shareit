@@ -37,9 +37,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=shareit
       - SPRING_DATASOURCE_PASSWORD=shareit
       - LOGGING_LEVEL_RU_PRACTICUM=DEBUG
-      - LANG=C.UTF-8
-      - LC_ALL=C.UTF-8
-      - JAVA_OPTS=-Dfile.encoding=UTF-8 -Duser.timezone=UTC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8001
 
   gateway:
 #    build:
@@ -60,7 +57,4 @@ services:
       - SERVER_PORT=8080
       - SHAREIT_SERVER_URL=http://bll-server:8888
       - LOGGING_LEVEL_RU_PRACTICUM=DEBUG
-      - LANG=C.UTF-8
-      - LC_ALL=C.UTF-8
-      - JAVA_OPTS=-Dfile.encoding=UTF-8 -Duser.timezone=UTC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 

@@ -13,6 +13,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.util.Map;
+
 @Service
 class UserClient extends BaseClient {
 
@@ -29,8 +31,12 @@ class UserClient extends BaseClient {
         return get("/" + userId, userId);
     }
 
-    public ResponseEntity<Object> getUsers() {
-        return get("");
+    public ResponseEntity<Object> getUsers(Integer from, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                HttpConstants.PAGINATION_FROM_PARAM, from,
+                HttpConstants.PAGINATION_SIZE_PARAM, size
+        );
+        return get(buildParametersFromMap(parameters));
     }
 
     public ResponseEntity<Object> createUser(CreateUserDto createUserDto) {

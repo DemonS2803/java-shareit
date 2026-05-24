@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item;
 
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import ru.practicum.shareit.BllServerApp;
 import ru.practicum.shareit.common.testutil.DatabaseCleaner;
 import ru.practicum.shareit.common.web.util.HttpConstants;
@@ -23,8 +20,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.hamcrest.Matchers.hasSize;
 import static ru.practicum.shareit.common.testutil.TestStubs.*;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

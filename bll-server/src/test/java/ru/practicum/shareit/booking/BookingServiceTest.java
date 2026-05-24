@@ -102,7 +102,7 @@ public class BookingServiceTest {
         bookingService.createBooking(VALID_CREATE_BOOKING_DTO.withEnd(VALID_BEFORE_1_MONTH_LDT), VALID_USER_ID_1);
         bookingService.createBooking(VALID_CREATE_BOOKING_DTO.withEnd(VALID_BEFORE_1_MONTH_LDT), VALID_USER_ID_2);
 
-        List<BookingDto> ownerBookings = bookingService.getBookingsByOwner(VALID_USER_ID_1, BookingRequestState.ALL);
+        List<BookingDto> ownerBookings = bookingService.getBookingsByOwner(VALID_USER_ID_1, BookingRequestState.ALL, 0, 10);
         assertEquals(3, ownerBookings.size());
     }
 
@@ -113,7 +113,7 @@ public class BookingServiceTest {
         bookingService.createBooking(VALID_CREATE_BOOKING_DTO.withEnd(VALID_BEFORE_1_MONTH_LDT), VALID_USER_ID_1);
         bookingService.createBooking(VALID_CREATE_BOOKING_DTO.withEnd(VALID_BEFORE_1_MONTH_LDT), VALID_USER_ID_2);
 
-        List<BookingDto> ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.ALL);
+        List<BookingDto> ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.ALL, 0, 10);
         assertEquals(2, ownerBookings.size());
     }
 
@@ -125,7 +125,7 @@ public class BookingServiceTest {
         bookingService.createBooking(VALID_CREATE_BOOKING_DTO.withEnd(VALID_BEFORE_1_MONTH_LDT), VALID_USER_ID_2);
 
         assertThrows(NotFoundException.class, () -> {
-            List<BookingDto> ownerBookings = bookingService.getBookingsByBooker(NON_EXISTENT_ID, BookingRequestState.ALL);
+            List<BookingDto> ownerBookings = bookingService.getBookingsByBooker(NON_EXISTENT_ID, BookingRequestState.ALL, 0, 10);
         });
     }
 
@@ -136,7 +136,7 @@ public class BookingServiceTest {
         bookingService.createBooking(VALID_CREATE_BOOKING_DTO.withEnd(VALID_BEFORE_1_MONTH_LDT), VALID_USER_ID_1);
         bookingService.createBooking(VALID_CREATE_BOOKING_DTO.withEnd(VALID_BEFORE_1_MONTH_LDT), VALID_USER_ID_2);
 
-        List<BookingDto> ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.ALL);
+        List<BookingDto> ownerBookings = bookingService.getBookingsByBooker(VALID_USER_ID_1, BookingRequestState.ALL, 0, 10);
         assertEquals(2, ownerBookings.size());
     }
 }

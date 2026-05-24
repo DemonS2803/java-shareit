@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,10 +18,10 @@ interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
     Optional<ItemRequest> findItemRequestById(Long id);
 
     @EntityGraph(attributePaths = {"responses", "responses.owner"})
-    List<ItemRequest> findByUserIdIsNotOrderByCreatedDesc(Long userId);
+    List<ItemRequest> findByUserIdIsNotOrderByCreatedDesc(Long userId, Pageable page);
 
     @EntityGraph(attributePaths = {"responses", "responses.owner"})
-    List<ItemRequest> findByUserIdOrderByCreatedDesc(Long userId);
+    List<ItemRequest> findByUserIdOrderByCreatedDesc(Long userId, Pageable page);
 
     @Modifying
     @Query(nativeQuery = true, value = """

@@ -14,7 +14,6 @@ import ru.practicum.shareit.BllServerApp;
 import ru.practicum.shareit.common.testutil.DatabaseCleaner;
 import ru.practicum.shareit.common.testutil.TestStubs;
 import ru.practicum.shareit.common.web.util.HttpConstants;
-import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;

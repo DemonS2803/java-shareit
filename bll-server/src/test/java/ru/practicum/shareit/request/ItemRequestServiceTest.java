@@ -1,9 +1,8 @@
-package ru.practicum.shareit.itemrequest;
+package ru.practicum.shareit.request;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.BllServerApp;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.common.testutil.DatabaseCleaner;
-import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.dto.CreateItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.UserService;
@@ -64,7 +62,7 @@ public class ItemRequestServiceTest {
        itemRequestService.createItemRequest(VALID_CREATE_ITEMREQUEST_DTO, VALID_USER_1.getId());
        ItemRequestDto request2 = itemRequestService.createItemRequest(new CreateItemRequestDto("Need a new mouse"), VALID_USER_2.getId());
 
-       List<ItemRequestDto> requests = itemRequestService.getAllOtherUsersItemRequests(VALID_USER_1.getId());
+       List<ItemRequestDto> requests = itemRequestService.getAllOtherUsersItemRequests(VALID_USER_1.getId(), 0, 10);
        assertNotNull(requests);
        assertEquals(1, requests.size());
        assertTrue(requests.stream().anyMatch(r -> r.getDescription().contains("new mouse")));
@@ -72,7 +70,7 @@ public class ItemRequestServiceTest {
 
    @Test
    void getAllOtherUsersItemRequests_userWithNoRequests_shouldReturnEmptyList() {
-       List<ItemRequestDto> requests = itemRequestService.getAllOtherUsersItemRequests(VALID_USER_1.getId());
+       List<ItemRequestDto> requests = itemRequestService.getAllOtherUsersItemRequests(VALID_USER_1.getId(), 0, 10);
        assertNotNull(requests);
        assertTrue(requests.isEmpty());
    }
@@ -82,14 +80,14 @@ public class ItemRequestServiceTest {
        ItemRequestDto request1 = itemRequestService.createItemRequest(VALID_CREATE_ITEMREQUEST_DTO, VALID_USER_1.getId());
        itemRequestService.createItemRequest(new CreateItemRequestDto("Need a new mouse"), VALID_USER_1.getId());
 
-       List<ItemRequestDto> requests = itemRequestService.getUserItemRequests(VALID_USER_1.getId());
+       List<ItemRequestDto> requests = itemRequestService.getUserItemRequests(VALID_USER_1.getId(), 0, 10);
        assertNotNull(requests);
        assertEquals(2, requests.size());
    }
 
    @Test
    void getUserItemRequests_userWithNoRequests_shouldReturnEmptyList() {
-       List<ItemRequestDto> requests = itemRequestService.getUserItemRequests(VALID_USER_1.getId());
+       List<ItemRequestDto> requests = itemRequestService.getUserItemRequests(VALID_USER_1.getId(), 0, 10);
        assertNotNull(requests);
        assertTrue(requests.isEmpty());
    }

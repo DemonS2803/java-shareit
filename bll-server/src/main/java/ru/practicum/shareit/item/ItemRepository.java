@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findItemById(Long id);
 
     @EntityGraph(attributePaths = {"comments"})
-    List<Item> findItemsByOwnerId(Long ownerId);
+    List<Item> findItemsByOwnerId(Long ownerId, Pageable page);
 
     @Query(value = """
         select it from Item it
@@ -25,6 +26,6 @@ interface ItemRepository extends JpaRepository<Item, Long> {
                 lower(it.description) like concat('%', lower(:text), '%')
             )
     """)
-    List<Item> searchAvailableItems(@Param("text") String text);
+    List<Item> searchAvailableItems(@Param("text") String text, Pageable page);
 
 }

@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import jakarta.validation.Valid;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.common.web.util.HttpConstants;
@@ -39,17 +41,21 @@ public class BookingController {
     @GetMapping("")
     public Collection<BookingDto> getUserBookingsInfo(
             @RequestParam(value = HttpConstants.BOOKING_STATE_PARAM, defaultValue = "ALL") BookingRequestState state,
-            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
+            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("User {} get {} bookings", userId, state);
-        return bookingService.getBookingsByBooker(userId, state);
+        return bookingService.getBookingsByBooker(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public Collection<BookingDto> getOwnerBookingsInfo(
             @RequestParam(value = HttpConstants.BOOKING_STATE_PARAM, defaultValue = "ALL") BookingRequestState state,
-            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
+            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("User {} get {} bookings", userId, state);
-        return bookingService.getBookingsByOwner(userId, state);
+        return bookingService.getBookingsByOwner(userId, state, from, size);
     }
 
     @PostMapping("")

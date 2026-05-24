@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import ru.practicum.shareit.common.web.util.HttpConstants;
 import ru.practicum.shareit.item.dto.*;
 
@@ -42,17 +44,22 @@ class ItemGateway {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getUserItems(@RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
+    public ResponseEntity<Object> getUserItems(
+            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("Get user items: {}", userId);
-        return itemClient.getItems(userId);
+        return itemClient.getItems(userId, from, size);
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchItemByText(
             @RequestParam(value = HttpConstants.SEARCH_ITEM_TEXT_PARAM) String text,
-            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER, required = false) Long userId) {
+            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER, required = false) Long userId,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("Search item by text: {}", text);
-        return itemClient.searchItemsByText(userId, text);
+        return itemClient.searchItemsByText(userId, text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

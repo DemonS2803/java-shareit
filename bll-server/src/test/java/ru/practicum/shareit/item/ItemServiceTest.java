@@ -263,7 +263,7 @@ class ItemServiceTest {
         ItemDto item3 = itemService.createItem(item3Dto, VALID_USER_1.getId());
 
         // Get all user items
-        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_1.getId());
+        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_1.getId(), 0, 10);
 
         assertNotNull(userItems);
         assertEquals(3, userItems.size());
@@ -274,7 +274,7 @@ class ItemServiceTest {
 
     @Test
     void getUserItems_userWithNoItems_shouldReturnEmptyList() {
-        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_2.getId());
+        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_2.getId(), 0, 10);
 
         assertNotNull(userItems);
         assertTrue(userItems.isEmpty());
@@ -285,7 +285,7 @@ class ItemServiceTest {
         Long nonExistentUserId = 999L;
 
         assertThrows(NotFoundException.class, () -> {
-            List<ItemDto> userItems = itemService.getUserItems(nonExistentUserId);
+            List<ItemDto> userItems = itemService.getUserItems(nonExistentUserId, 0, 10);
         });
     }
 
@@ -298,7 +298,7 @@ class ItemServiceTest {
         // Delete one item (if delete method exists)
         // itemService.deleteItem(item1.getId(), VALID_USER_1.getId());
 
-        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_1.getId());
+        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_1.getId(), 0, 10);
 
         // Verify (assuming delete works)
         // assertFalse(userItems.stream().anyMatch(i -> i.getId().equals(item1.getId())));
@@ -329,7 +329,7 @@ class ItemServiceTest {
         itemService.createItem(keyboardDto, VALID_USER_1.getId());
 
         // Search for "gaming"
-        List<ItemDto> searchResults = itemService.searchItems("gaming");
+        List<ItemDto> searchResults = itemService.searchItems("gaming", 0, 10);
 
         assertNotNull(searchResults);
         assertEquals(2, searchResults.size());
@@ -347,7 +347,7 @@ class ItemServiceTest {
         itemService.createItem(itemDto, VALID_USER_1.getId());
 
         // Search with different case
-        List<ItemDto> searchResults = itemService.searchItems("laptop");
+        List<ItemDto> searchResults = itemService.searchItems("laptop", 0, 10);
 
         assertNotNull(searchResults);
         assertEquals(1, searchResults.size());
@@ -363,7 +363,7 @@ class ItemServiceTest {
         itemService.createItem(itemDto, VALID_USER_1.getId());
 
         // Search with partial word
-        List<ItemDto> searchResults = itemService.searchItems("smart");
+        List<ItemDto> searchResults = itemService.searchItems("smart", 0, 10);
 
         assertNotNull(searchResults);
         assertEquals(1, searchResults.size());
@@ -375,7 +375,7 @@ class ItemServiceTest {
         itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_1.getId());
 
         // Search for non-existent text
-        List<ItemDto> searchResults = itemService.searchItems("nonexistent");
+        List<ItemDto> searchResults = itemService.searchItems("nonexistent", 0, 10);
 
         assertNotNull(searchResults);
         assertTrue(searchResults.isEmpty());
@@ -385,7 +385,7 @@ class ItemServiceTest {
     void searchItems_emptyText_shouldReturnEmptyList() {
         itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_1.getId());
 
-        List<ItemDto> searchResults = itemService.searchItems("");
+        List<ItemDto> searchResults = itemService.searchItems("", 0, 10);
 
         assertNotNull(searchResults);
         assertTrue(searchResults.isEmpty());
@@ -395,7 +395,7 @@ class ItemServiceTest {
     void searchItems_nullText_shouldReturnEmptyList() {
         itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_1.getId());
 
-        List<ItemDto> searchResults = itemService.searchItems(null);
+        List<ItemDto> searchResults = itemService.searchItems(null, 0, 10);
 
         assertNotNull(searchResults);
         assertTrue(searchResults.isEmpty());
@@ -405,7 +405,7 @@ class ItemServiceTest {
     void searchItems_whitespaceText_shouldReturnEmptyList() {
         itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_1.getId());
 
-        List<ItemDto> searchResults = itemService.searchItems("   ");
+        List<ItemDto> searchResults = itemService.searchItems("   ", 0, 10);
 
         assertNotNull(searchResults);
         assertTrue(searchResults.isEmpty());
@@ -428,7 +428,7 @@ class ItemServiceTest {
         itemService.createItem(unavailableDto, VALID_USER_1.getId());
 
         // Search for "laptop"
-        List<ItemDto> searchResults = itemService.searchItems("laptop");
+        List<ItemDto> searchResults = itemService.searchItems("laptop", 0, 10);
 
         // Only available items should be returned
         assertNotNull(searchResults);
@@ -454,7 +454,7 @@ class ItemServiceTest {
         itemService.createItem(owner2Item, VALID_USER_2.getId());
 
         // Search for "phone"
-        List<ItemDto> searchResults = itemService.searchItems("phone");
+        List<ItemDto> searchResults = itemService.searchItems("phone", 0, 10);
 
         assertEquals(2, searchResults.size());
     }
@@ -478,11 +478,11 @@ class ItemServiceTest {
         assertEquals("Updated Laptop", retrievedItem.getName());
 
         // 4. Get user items
-        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_1.getId());
+        List<ItemDto> userItems = itemService.getUserItems(VALID_USER_1.getId(), 0, 10);
         assertTrue(userItems.stream().anyMatch(i -> i.getId().equals(createdItem.getId())));
 
         // 5. Search for item
-        List<ItemDto> searchResults = itemService.searchItems("Updated");
+        List<ItemDto> searchResults = itemService.searchItems("Updated", 0, 10);
         assertTrue(searchResults.stream().anyMatch(i -> i.getId().equals(createdItem.getId())));
     }
 
@@ -496,12 +496,12 @@ class ItemServiceTest {
         ItemDto owner2Item = itemService.createItem(VALID_CREATE_ITEM_DTO, VALID_USER_2.getId());
 
         // Get items for owner1
-        List<ItemDto> owner1Items = itemService.getUserItems(VALID_USER_1.getId());
+        List<ItemDto> owner1Items = itemService.getUserItems(VALID_USER_1.getId(), 0, 10);
         assertEquals(2, owner1Items.size());
         assertTrue(owner1Items.stream().allMatch(i -> i.getOwner().getId().equals(VALID_USER_1.getId())));
 
         // Get items for owner2
-        List<ItemDto> owner2Items = itemService.getUserItems(VALID_USER_2.getId());
+        List<ItemDto> owner2Items = itemService.getUserItems(VALID_USER_2.getId(), 0, 10);
         assertEquals(1, owner2Items.size());
         assertTrue(owner2Items.stream().allMatch(i -> i.getOwner().getId().equals(VALID_USER_2.getId())));
     }

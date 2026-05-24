@@ -20,8 +20,8 @@ public interface ItemService {
 
     CommentDto commentItem(CreateCommentDto dto);
 
-    List<ItemDto> searchItems(String text);
+    List<ItemDto> searchItems(String text, Integer from, Integer size);
 
-    List<ItemDto> getUserItems(Long userId);
+    List<ItemDto> getUserItems(Long userId, Integer from, Integer size);
 
 }

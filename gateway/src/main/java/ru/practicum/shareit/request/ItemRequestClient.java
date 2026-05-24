@@ -11,6 +11,8 @@ import ru.practicum.shareit.common.web.client.BaseClient;
 import ru.practicum.shareit.common.web.util.HttpConstants;
 import ru.practicum.shareit.request.dto.CreateItemRequestDto;
 
+import java.util.Map;
+
 @Service
 public class ItemRequestClient extends BaseClient {
 
@@ -27,12 +29,21 @@ public class ItemRequestClient extends BaseClient {
         return get("/" + itemId);
     }
 
-    public ResponseEntity<Object> getUserItemRequests(long userId) {
-        return get("", userId);
+    public ResponseEntity<Object> getUserItemRequests(long userId, Integer from, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                HttpConstants.PAGINATION_FROM_PARAM, from,
+                HttpConstants.PAGINATION_SIZE_PARAM, size
+        );
+        return get(buildParametersFromMap(parameters), userId);
+
     }
 
-    public ResponseEntity<Object> getOtherItemRequests(long userId) {
-        return get("/all", userId);
+    public ResponseEntity<Object> getOtherItemRequests(long userId, Integer from, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                HttpConstants.PAGINATION_FROM_PARAM, from,
+                HttpConstants.PAGINATION_SIZE_PARAM, size
+        );
+        return get("/all" + buildParametersFromMap(parameters), userId);
     }
 
     public ResponseEntity<Object> createItemRequest(long userId, CreateItemRequestDto createItemRequestDto) {

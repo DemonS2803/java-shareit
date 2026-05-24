@@ -10,6 +10,7 @@ services:
       - POSTGRES_DB=shareit
       - POSTGRES_USER=shareit
       - POSTGRES_PASSWORD=shareit
+      - TZ=Europe/Moscow
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
@@ -17,26 +18,25 @@ services:
       retries: 10
 
   bll-server:
-#    build:
-#      context: .
-#      dockerfile: bll-server/Dockerfile
     build: bll-server
     image: shateit-bll-server
     container_name: shareit-bll-server
     expose:
       - "8888"
-      - "8080"
-    ports:
-      - "8888:8888"
-      - "8001:8001"
+#      - "8080"
+#    ports:
+#      - "8888:8888"
+#      - "8001:8001"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - SERVER_PORT=8888
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
       - SPRING_DATASOURCE_USERNAME=shareit
       - SPRING_DATASOURCE_PASSWORD=shareit
       - LOGGING_LEVEL_RU_PRACTICUM=DEBUG
+      - TZ=Europe/Moscow
 
   gateway:
 #    build:
@@ -47,14 +47,15 @@ services:
     container_name: shareit-gateway
     expose:
       - "8080"
-      - "8889"
     ports:
       - "8080:8080"
-      - "8000:8000"
+#      - "8000:8000"
     depends_on:
-      - bll-server
+      bll-server:
+        condition: service_started
     environment:
       - SERVER_PORT=8080
       - SHAREIT_SERVER_URL=http://bll-server:8888
       - LOGGING_LEVEL_RU_PRACTICUM=DEBUG
+      - TZ=Europe/Moscow
 

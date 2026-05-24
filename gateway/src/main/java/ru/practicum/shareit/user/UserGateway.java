@@ -2,6 +2,8 @@ package ru.practicum.shareit.user;
 
 import jakarta.validation.Valid;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import ru.practicum.shareit.common.web.util.HttpConstants;
 import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
@@ -23,9 +25,11 @@ class UserGateway {
     private final UserClient userClient;
 
     @GetMapping
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<Object> getUsers(
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("Fetching all users");
-        return userClient.getUsers();
+        return userClient.getUsers(from, size);
     }
 
     @GetMapping("/{id}")

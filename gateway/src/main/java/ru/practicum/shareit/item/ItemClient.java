@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import ru.practicum.shareit.common.web.client.BaseClient;
@@ -33,13 +32,20 @@ class ItemClient extends BaseClient {
         return get("/" + itemId, userId);
     }
 
-    public ResponseEntity<Object> getItems(long userId) {
-        return get("", userId);
+    public ResponseEntity<Object> getItems(long userId, Integer from, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                HttpConstants.PAGINATION_FROM_PARAM, from,
+                HttpConstants.PAGINATION_SIZE_PARAM, size
+        );
+        return get(buildParametersFromMap(parameters), userId);
     }
 
-    public ResponseEntity<Object> searchItemsByText(long userId, String text) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(HttpConstants.SEARCH_ITEM_TEXT_PARAM, text);
+    public ResponseEntity<Object> searchItemsByText(long userId, String text, Integer from, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                HttpConstants.SEARCH_ITEM_TEXT_PARAM, text,
+                HttpConstants.PAGINATION_FROM_PARAM, from,
+                HttpConstants.PAGINATION_SIZE_PARAM, size
+        );
         String path = buildParametersFromMap(parameters);
         return get("/search" + path, userId, parameters);
     }

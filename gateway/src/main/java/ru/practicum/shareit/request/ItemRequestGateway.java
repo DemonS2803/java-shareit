@@ -2,6 +2,8 @@ package ru.practicum.shareit.request;
 
 import jakarta.validation.Valid;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import ru.practicum.shareit.common.web.util.HttpConstants;
 import ru.practicum.shareit.item.dto.*;
 
@@ -28,15 +30,21 @@ class ItemRequestGateway {
 
 
     @GetMapping
-    public ResponseEntity<Object> getUserItemRequests(@RequestHeader(HttpConstants.SHARER_USER_HEADER) Long userId) {
+    public ResponseEntity<Object> getUserItemRequests(
+            @RequestHeader(HttpConstants.SHARER_USER_HEADER) Long userId,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("Get item requests for user {}", userId);
-        return itemRequestClient.getUserItemRequests(userId);
+        return itemRequestClient.getUserItemRequests(userId, from, size);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getOthersItemRequests(@RequestHeader(HttpConstants.SHARER_USER_HEADER) Long userId) {
+    public ResponseEntity<Object> getOthersItemRequests(
+            @RequestHeader(HttpConstants.SHARER_USER_HEADER) Long userId,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("User {} requested all items request list", userId);
-        return itemRequestClient.getOtherItemRequests(userId);
+        return itemRequestClient.getOtherItemRequests(userId, from, size);
     }
 
     @GetMapping("/{id}")

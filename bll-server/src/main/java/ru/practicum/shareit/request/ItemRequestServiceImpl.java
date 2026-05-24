@@ -2,6 +2,8 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
@@ -39,18 +41,20 @@ class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> getAllOtherUsersItemRequests(Long userId) {
+    public List<ItemRequestDto> getAllOtherUsersItemRequests(Long userId, int from, int size) {
         log.debug("User {} want to get global requests list", userId);
-        List<ItemRequest> requests = itemRequestRepository.findByUserIdIsNotOrderByCreatedDesc(userId);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
+        List<ItemRequest> requests = itemRequestRepository.findByUserIdIsNotOrderByCreatedDesc(userId, page);
         return requests.stream()
                 .map(ItemRequestMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<ItemRequestDto> getUserItemRequests(Long userId) {
+    public List<ItemRequestDto> getUserItemRequests(Long userId, int from, int size) {
         log.debug("User {} wants to get his item requests", userId);
-        List<ItemRequest> requests = itemRequestRepository.findByUserIdOrderByCreatedDesc(userId);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
+        List<ItemRequest> requests = itemRequestRepository.findByUserIdOrderByCreatedDesc(userId, page);
         return requests.stream()
                 .map(ItemRequestMapper::toDto)
                 .toList();

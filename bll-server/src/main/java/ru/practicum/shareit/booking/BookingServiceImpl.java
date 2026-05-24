@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.common.exception.ActionNotPermittedForUserException;
@@ -88,32 +90,34 @@ class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsByBooker(Long bookerId, BookingRequestState state) {
+    public List<BookingDto> getBookingsByBooker(Long bookerId, BookingRequestState state, int from, int size) {
         userService.getUserById(bookerId);
         log.debug("Get bookings bo booker {}", bookerId);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
         List<Booking> filteredBookings = switch (state) {
-            case ALL -> bookingRepository.findBookingsByBookerId(bookerId);
-            case PAST -> bookingRepository.findPastBookingsByBookerId(bookerId, LocalDateTime.now());
-            case CURRENT -> bookingRepository.findCurrentBookingsByBookerId(bookerId, LocalDateTime.now());
-            case FUTURE -> bookingRepository.findFutureBookingsByBookerId(bookerId, LocalDateTime.now());
-            case WAITING -> bookingRepository.findBookingsByBookerIdAndState(bookerId, BookingState.WAITING);
-            case REJECTED -> bookingRepository.findBookingsByBookerIdAndState(bookerId, BookingState.REJECTED);
+            case ALL -> bookingRepository.findBookingsByBookerId(bookerId, page);
+            case PAST -> bookingRepository.findPastBookingsByBookerId(bookerId, LocalDateTime.now(), page);
+            case CURRENT -> bookingRepository.findCurrentBookingsByBookerId(bookerId, LocalDateTime.now(), page);
+            case FUTURE -> bookingRepository.findFutureBookingsByBookerId(bookerId, LocalDateTime.now(), page);
+            case WAITING -> bookingRepository.findBookingsByBookerIdAndState(bookerId, BookingState.WAITING, page);
+            case REJECTED -> bookingRepository.findBookingsByBookerIdAndState(bookerId, BookingState.REJECTED, page);
         };
         log.debug("Found {} bookings for user {} with request state {}", filteredBookings.size(), bookerId, state);
         return BookingMapper.toDto(filteredBookings);
     }
 
     @Override
-    public List<BookingDto> getBookingsByOwner(Long ownerId, BookingRequestState state) {
+    public List<BookingDto> getBookingsByOwner(Long ownerId, BookingRequestState state, int from, int size) {
         userService.getUserById(ownerId);
         log.debug("Get bookings by owner {}", ownerId);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
         List<Booking> filteredBookings = switch (state) {
-            case ALL -> bookingRepository.findBookingsByOwnerId(ownerId);
-            case PAST -> bookingRepository.findPastBookingsByOwnerId(ownerId, LocalDateTime.now());
-            case CURRENT -> bookingRepository.findCurrentBookingsByOwnerId(ownerId, LocalDateTime.now());
-            case FUTURE -> bookingRepository.findFutureBookingsByOwnerId(ownerId, LocalDateTime.now());
-            case WAITING -> bookingRepository.findBookingsByOwnerIdAndState(ownerId, BookingState.WAITING);
-            case REJECTED -> bookingRepository.findBookingsByOwnerIdAndState(ownerId, BookingState.REJECTED);
+            case ALL -> bookingRepository.findBookingsByOwnerId(ownerId, page);
+            case PAST -> bookingRepository.findPastBookingsByOwnerId(ownerId, LocalDateTime.now(), page);
+            case CURRENT -> bookingRepository.findCurrentBookingsByOwnerId(ownerId, LocalDateTime.now(), page);
+            case FUTURE -> bookingRepository.findFutureBookingsByOwnerId(ownerId, LocalDateTime.now(), page);
+            case WAITING -> bookingRepository.findBookingsByOwnerIdAndState(ownerId, BookingState.WAITING, page);
+            case REJECTED -> bookingRepository.findBookingsByOwnerIdAndState(ownerId, BookingState.REJECTED, page);
         };
         log.debug("Found {} bookings for user {} with request state {}", filteredBookings.size(), ownerId, state);
         return BookingMapper.toDto(filteredBookings);

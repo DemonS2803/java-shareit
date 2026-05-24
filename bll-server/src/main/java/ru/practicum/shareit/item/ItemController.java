@@ -4,6 +4,8 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import ru.practicum.shareit.common.web.util.HttpConstants;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CreateCommentDto;
@@ -55,15 +57,21 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getUserItems(@RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId) {
+    public List<ItemDto> getUserItems(
+            @RequestHeader(value = HttpConstants.SHARER_USER_HEADER) Long userId,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("Get user items: {}", userId);
-        return itemService.getUserItems(userId);
+        return itemService.getUserItems(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemByText(@RequestParam(value = HttpConstants.SEARCH_ITEM_TEXT_PARAM) String text) {
+    public List<ItemDto> searchItemByText(
+            @RequestParam(value = HttpConstants.SEARCH_ITEM_TEXT_PARAM) String text,
+            @PositiveOrZero @RequestParam(name = HttpConstants.PAGINATION_FROM_PARAM, defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = HttpConstants.PAGINATION_SIZE_PARAM, defaultValue = "10") Integer size) {
         log.debug("Search item by text: {}", text);
-        return itemService.searchItems(text);
+        return itemService.searchItems(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingItemInfoService;
 import ru.practicum.shareit.booking.dto.NearestBookingsDto;
@@ -89,12 +91,13 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItems(String text) {
+    public List<ItemDto> searchItems(String text, Integer from, Integer size) {
         log.info("Search items by text: {}", text);
         if (text == null || text.isEmpty()) {
             return new ArrayList<>();
         }
-        List<ItemDto> items = itemRepository.searchAvailableItems(text).stream()
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
+        List<ItemDto> items = itemRepository.searchAvailableItems(text, page).stream()
                 .map(ItemMapper::toDto)
                 .toList();
         log.info("Found items: {}", items);
@@ -102,10 +105,11 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getUserItems(Long userId) {
+    public List<ItemDto> getUserItems(Long userId, Integer from, Integer size) {
         userService.getUserEntityById(userId);
         log.debug("Get user items by ownerId: {}", userId);
-        List<Item> userItems = itemRepository.findItemsByOwnerId(userId);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
+        List<Item> userItems = itemRepository.findItemsByOwnerId(userId, page);
         List<ItemDto> itemDtos = userItems.stream().map(ItemMapper::toDto).toList();
         List<Long> userItemsId = userItems.stream().map(Item::getId).toList();
 
@@ -124,6 +128,7 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto commentItem(CreateCommentDto createDto) {
+        log.info("User {} comment item {}", createDto.getUserId(), createDto.getItemId());
         User user = userService.getUserEntityById(createDto.getUserId());
         Item item = getItemByIdOrThrow(createDto.getItemId());
         if (!bookingItemInfoService.isUserHadPastBookingForItem(user.getId(), item.getId())) {
